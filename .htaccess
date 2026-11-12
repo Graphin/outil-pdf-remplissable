@@ -1,0 +1,8 @@
+# Types de fichiers pour l'outil PDF remplissable (Apache et LiteSpeed).
+# Ces lignes ne font que préciser le type des fichiers ; elles ne changent rien d'autre.
+<IfModule mod_mime.c>
+  AddType application/javascript .js .mjs
+  AddType application/wasm .wasm
+  AddType application/json .json
+  AddType application/octet-stream .bcmap .pfb
+</IfModule>

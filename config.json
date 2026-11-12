@@ -1,0 +1,16 @@
+{
+  "nomOutil": "PDF remplissable",
+  "nomStructure": "Graph'in",
+  "logo": "",
+  "logoTexteAlternatif": "",
+  "couleurPrincipale": "#00A19A",
+  "couleurSecondaire": "#1D1D1B",
+  "couleurClaire": "#9CCAC8",
+  "couleurAccent": "#E94655",
+  "policeTitres": "Byington, 'Byington Bold', Georgia, 'Times New Roman', serif",
+  "fichierPoliceTitres": "",
+  "policeTexte": "Verdana, Geneva, Tahoma, sans-serif",
+  "fichierPoliceTexte": "",
+  "piedDePageTexte": "Un outil Graph'in",
+  "piedDePageLien": "https://graph-in.fr"
+}

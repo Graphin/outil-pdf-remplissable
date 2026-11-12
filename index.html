@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>PDF remplissable</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/app.css?v=4">
+<script src="vendor/pdf-lib/pdf-lib.min.js?v=1.17.1"></script>
+<script type="module" src="assets/js/main.js?v=4"></script>
+</head>
+<body>
+<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+<header class="bandeau">
+  <div class="bandeau-gauche">
+    <span id="marque" class="marque">Graph'in</span>
+    <span class="bandeau-sep" aria-hidden="true"></span>
+    <span class="bandeau-outil" data-nom-outil>PDF remplissable</span>
+  </div>
+  <div class="bandeau-droite">
+    <span id="nom-fichier" class="nom-fichier" hidden></span>
+    <button type="button" id="btn-changer" class="btn btn-discret" hidden>Changer<span class="mot-long"> de PDF</span></button>
+  </div>
+</header>
+
+<main id="contenu">
+
+  <!-- Accueil : dépôt du PDF -->
+  <section id="accueil" class="accueil" aria-labelledby="titre-accueil">
+    <div class="accueil-texte">
+      <h1 id="titre-accueil" data-nom-outil>PDF remplissable</h1>
+      <p class="chapo">Déposez un formulaire, un cerfa ou une enquête en PDF. L'outil repère les zones à remplir et y pose des champs. Vous enregistrez ensuite le PDF prêt à remplir, ou vous le remplissez ici avant de l'enregistrer.</p>
+      <ol class="etapes">
+        <li><strong>Déposer le PDF.</strong> Les champs sont posés automatiquement.</li>
+        <li><strong>Vérifier les champs.</strong> Déplacez, redimensionnez, renommez, ajoutez ce qui manque.</li>
+        <li><strong>Enregistrer.</strong> Avec des champs vides, ou rempli ici.</li>
+      </ol>
+      <p class="confidentialite">Le fichier reste sur votre appareil. Il est traité par votre navigateur et n'est envoyé nulle part.</p>
+    </div>
+
+    <div id="depot" class="depot" tabindex="-1">
+      <svg class="depot-illu" viewBox="0 0 220 280" aria-hidden="true" focusable="false">
+        <rect class="feuille" x="10" y="8" width="200" height="264" rx="4"/>
+        <rect class="trait" x="30" y="32" width="90" height="7" rx="2"/>
+        <rect class="trait clair" x="30" y="58" width="34" height="5" rx="2"/>
+        <g class="peigne">
+          <rect x="72" y="52" width="13" height="15"/><rect x="85" y="52" width="13" height="15"/><rect x="98" y="52" width="13" height="15"/><rect x="111" y="52" width="13" height="15"/><rect x="124" y="52" width="13" height="15"/><rect x="137" y="52" width="13" height="15"/><rect x="150" y="52" width="13" height="15"/><rect x="163" y="52" width="13" height="15"/>
+        </g>
+        <rect class="champ-illu" x="72" y="52" width="104" height="15"/>
+        <rect class="trait clair" x="30" y="88" width="40" height="5" rx="2"/>
+        <line class="ligne" x1="74" y1="95" x2="190" y2="95"/>
+        <rect class="champ-illu" x="74" y="81" width="116" height="13"/>
+        <rect class="trait clair" x="30" y="116" width="58" height="5" rx="2"/>
+        <rect class="case" x="100" y="112" width="11" height="11"/>
+        <rect class="trait clair" x="115" y="116" width="16" height="5" rx="2"/>
+        <rect class="case coche" x="142" y="112" width="11" height="11"/>
+        <rect class="trait clair" x="157" y="116" width="16" height="5" rx="2"/>
+        <rect class="trait clair" x="30" y="144" width="70" height="5" rx="2"/>
+        <rect class="cadre" x="30" y="156" width="160" height="62"/>
+        <rect class="champ-illu" x="32" y="158" width="156" height="58"/>
+        <rect class="trait clair" x="30" y="238" width="30" height="5" rx="2"/>
+        <line class="ligne pointille" x1="64" y1="244" x2="120" y2="244"/>
+        <rect class="trait clair" x="126" y="238" width="10" height="5" rx="2"/>
+        <line class="ligne pointille" x1="140" y1="244" x2="190" y2="244"/>
+      </svg>
+      <div class="depot-actions">
+        <button type="button" id="btn-choisir" class="btn btn-principal btn-grand">Choisir un PDF</button>
+        <p class="depot-aide">ou faites-le glisser ici</p>
+        <input type="file" id="fichier" accept="application/pdf,.pdf" hidden>
+      </div>
+      <p id="erreur-depot" class="message message-erreur" role="alert" hidden></p>
+    </div>
+  </section>
+
+  <!-- Atelier : pages, champs, enregistrement -->
+  <section id="atelier" class="atelier" hidden aria-label="Atelier">
+    <a class="lien-evitement" href="#bloc-enregistrer">Aller à l'enregistrement</a>
+    <div class="outils" role="toolbar" aria-label="Outils">
+      <div class="onglets" role="tablist" aria-label="Mode">
+        <button type="button" role="tab" id="onglet-ajuster" class="onglet" aria-selected="true" aria-controls="espace">Ajuster les champs</button>
+        <button type="button" role="tab" id="onglet-remplir" class="onglet" aria-selected="false" aria-controls="espace">Remplir</button>
+      </div>
+      <div class="groupe-outils" id="outils-trace" aria-label="Tracer">
+        <button type="button" class="btn-outil actif" data-outil="selection" aria-pressed="true" title="Sélectionner et déplacer (Échap)">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3l10 7-4.5 1 2.5 5-2 1-2.5-5L5 15z"/></svg><span>Sélection</span>
+        </button>
+        <button type="button" class="btn-outil" data-outil="text" aria-pressed="false" title="Tracer un champ texte">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="6" width="15" height="8" rx="1"/><path d="M6 8.5v3M5 8.5h2M5 11.5h2"/></svg><span>Texte</span>
+        </button>
+        <button type="button" class="btn-outil" data-outil="checkbox" aria-pressed="false" title="Tracer une case à cocher">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="4" width="12" height="12" rx="1"/><path d="M7 10l2 2 4-4"/></svg><span>Case</span>
+        </button>
+        <button type="button" class="btn-outil" data-outil="dropdown" aria-pressed="false" title="Tracer une liste de choix">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="6" width="15" height="8" rx="1"/><path d="M12 9l1.5 2 1.5-2"/></svg><span>Liste</span>
+        </button>
+      </div>
+      <div class="groupe-outils">
+        <button type="button" id="btn-annuler" class="btn-outil" title="Annuler (Ctrl ou Cmd + Z)" disabled>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5L3 9l4 4M3.5 9H12a5 5 0 010 10h-2"/></svg><span>Annuler</span>
+        </button>
+        <button type="button" id="btn-retablir" class="btn-outil" title="Rétablir (Ctrl ou Cmd + Maj + Z)" disabled>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M13 5l4 4-4 4M16.5 9H8a5 5 0 000 10h2"/></svg><span>Rétablir</span>
+        </button>
+      </div>
+      <div class="groupe-outils vue-remplir" role="group" aria-label="Affichage des champs à remplir">
+        <button type="button" id="btn-vue-page" class="btn-outil" aria-pressed="true">Sur la page</button>
+        <button type="button" id="btn-vue-liste" class="btn-outil" aria-pressed="false">En liste</button>
+      </div>
+      <div class="groupe-outils zoom" aria-label="Zoom">
+        <button type="button" id="btn-zoom-moins" class="btn-outil btn-carre" title="Zoom arrière" aria-label="Zoom arrière">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10"/></svg>
+        </button>
+        <button type="button" id="btn-zoom-ajuste" class="btn-outil zoom-valeur" title="Ajuster à la largeur">100 %</button>
+        <button type="button" id="btn-zoom-plus" class="btn-outil btn-carre" title="Zoom avant" aria-label="Zoom avant">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10M10 5v10"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="corps">
+      <div id="espace" class="espace" role="tabpanel" aria-label="Pages du document">
+        <div id="pages" class="pages"></div>
+        <form id="liste" class="liste" hidden autocomplete="off" aria-label="Champs à remplir, en liste"></form>
+      </div>
+
+      <aside class="panneau" aria-label="Réglages et enregistrement">
+        <section class="bloc" id="bloc-detection" aria-labelledby="titre-detection">
+          <h2 id="titre-detection">Champs</h2>
+          <p id="resume-champs" class="resume" aria-live="polite"></p>
+          <div class="reglage-sensibilite">
+            <label for="sensibilite">Sensibilité de la détection</label>
+            <input type="range" id="sensibilite" min="1" max="5" step="1" value="3" aria-describedby="sensibilite-aide">
+            <div class="graduation" aria-hidden="true"><span>Stricte</span><span>Large</span></div>
+            <p id="sensibilite-aide" class="aide">Plus large, l'outil trouve davantage de zones, avec plus de champs en trop.</p>
+          </div>
+          <button type="button" id="btn-relancer" class="btn btn-secondaire">Relancer la détection</button>
+          <p class="aide">Les champs que vous avez ajoutés ou modifiés sont gardés.</p>
+        </section>
+
+        <section class="bloc" id="bloc-proprietes" aria-labelledby="titre-proprietes">
+          <h2 id="titre-proprietes">Champ sélectionné</h2>
+          <div id="proprietes-vide" class="aide">
+            <p>Cliquez sur un champ pour le modifier. Maj + clic pour en sélectionner plusieurs.</p>
+            <p>Pour ajouter un champ, choisissez Texte, Case ou Liste puis tracez un rectangle sur la page.</p>
+            <p>Suppr efface la sélection, les flèches la déplacent, Ctrl ou Cmd + Z annule.</p>
+          </div>
+          <form id="proprietes" class="proprietes" hidden autocomplete="off">
+            <div class="ligne-prop">
+              <label for="prop-nom" id="prop-nom-libelle">Nom</label>
+              <input type="text" id="prop-nom" maxlength="80">
+              <p id="prop-nom-info" class="aide" hidden></p>
+            </div>
+            <div class="ligne-prop">
+              <label for="prop-type">Type</label>
+              <select id="prop-type">
+                <option value="text">Texte sur une ligne</option>
+                <option value="multiline">Texte sur plusieurs lignes</option>
+                <option value="comb">Peigne (une lettre par case)</option>
+                <option value="checkbox">Case à cocher</option>
+                <option value="radio">Bouton radio (un seul choix)</option>
+                <option value="dropdown">Liste de choix</option>
+              </select>
+            </div>
+            <div class="ligne-prop" data-pour="radio">
+              <label for="prop-groupe">Groupe</label>
+              <input type="text" id="prop-groupe" maxlength="80" list="liste-groupes">
+              <datalist id="liste-groupes"></datalist>
+            </div>
+            <div class="ligne-prop" data-pour="radio">
+              <label for="prop-option">Valeur de ce choix</label>
+              <input type="text" id="prop-option" maxlength="60">
+            </div>
+            <div class="ligne-prop" data-pour="comb">
+              <label for="prop-cases">Nombre de cases</label>
+              <input type="number" id="prop-cases" min="1" max="99" step="1">
+            </div>
+            <div class="ligne-prop" data-pour="dropdown">
+              <label for="prop-choix">Choix proposés, un par ligne</label>
+              <textarea id="prop-choix" rows="4"></textarea>
+            </div>
+            <div class="ligne-prop" data-pour="text multiline comb dropdown">
+              <label for="prop-taille">Taille du texte</label>
+              <select id="prop-taille">
+                <option value="0">Automatique</option>
+                <option value="7">7 pt</option><option value="8">8 pt</option><option value="9">9 pt</option>
+                <option value="10">10 pt</option><option value="11">11 pt</option><option value="12">12 pt</option>
+                <option value="14">14 pt</option><option value="16">16 pt</option><option value="18">18 pt</option>
+              </select>
+            </div>
+            <fieldset class="ligne-prop position">
+              <legend>Position et taille, en points</legend>
+              <label>X <input type="number" id="prop-x" step="0.5"></label>
+              <label>Y <input type="number" id="prop-y" step="0.5"></label>
+              <label>L <input type="number" id="prop-w" step="0.5" min="2"></label>
+              <label>H <input type="number" id="prop-h" step="0.5" min="2"></label>
+            </fieldset>
+            <div class="actions-prop">
+              <button type="button" id="btn-dupliquer" class="btn btn-discret">Dupliquer</button>
+              <button type="button" id="btn-supprimer" class="btn btn-danger">Supprimer</button>
+            </div>
+          </form>
+          <div id="multi" class="multi" hidden>
+            <p id="multi-compte"></p>
+            <button type="button" id="btn-grouper" class="btn btn-secondaire">Grouper en boutons radio</button>
+            <button type="button" id="btn-en-cases" class="btn btn-discret">Remettre en cases à cocher</button>
+            <button type="button" id="btn-supprimer-multi" class="btn btn-danger">Supprimer la sélection</button>
+          </div>
+          <p id="existant-info" class="aide" hidden>Ce champ était déjà dans le PDF. Il est conservé tel quel ; vous pouvez seulement le remplir.</p>
+        </section>
+
+        <section class="bloc bloc-enregistrer" id="bloc-enregistrer" tabindex="-1" aria-labelledby="titre-enregistrer">
+          <h2 id="titre-enregistrer">Enregistrer</h2>
+          <button type="button" id="btn-vierge" class="btn btn-principal btn-bloc">
+            <span class="btn-titre">PDF à remplir</span>
+            <span class="btn-sous">Champs vides, à envoyer ou à remplir plus tard</span>
+          </button>
+          <button type="button" id="btn-rempli" class="btn btn-secondaire btn-bloc">
+            <span class="btn-titre">PDF rempli</span>
+            <span class="btn-sous">Avec ce que vous avez saisi dans l'onglet Remplir</span>
+          </button>
+          <label class="option-figer">
+            <input type="checkbox" id="figer">
+            <span>Figer le PDF rempli : le texte saisi ne pourra plus être modifié</span>
+          </label>
+          <p id="note-enregistrement" class="aide"></p>
+        </section>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="pied">
+  <p id="pied-texte"></p>
+</footer>
+
+<div id="progression" class="progression" hidden role="status" aria-live="polite">
+  <div class="progression-boite">
+    <p id="progression-texte">Analyse en cours</p>
+    <div class="barre"><div id="progression-barre" class="barre-remplie"></div></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden>
+  <span id="toast-texte"></span>
+  <button type="button" id="toast-fermer" class="toast-fermer" aria-label="Fermer le message">×</button>
+</div>
+</body>
+</html>
