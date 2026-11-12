@@ -136,7 +136,7 @@ export function appliquerConfig(c) {
     titres = `"PoliceTitresClient", ${titres}`;
   }
   if (c.fichierPoliceTexte) {
-    css += `@font-face{font-family:"PoliceTexteClient";src:url("${c.fichierPoliceTexte}");font-display:swap;}`;
+    css += `@font-face{font-family:"PoliceTexteClient";src:url("${c.fichierPoliceTexte}");font-display:swap;font-weight:300 800;}`;
     texte = `"PoliceTexteClient", ${texte}`;
   }
   if (css) {
