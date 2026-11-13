@@ -2,9 +2,9 @@
 // Tout se passe dans le navigateur. Aucun fichier n'est envoyé.
 
 /* global PDFLib */
-import { chargerConfig, appliquerConfig } from "./config.js?v=4";
-import { analyserPage, nettoyerLibelle } from "./detect.js?v=4";
-import { construirePdf } from "./export.js?v=4";
+import { chargerConfig, appliquerConfig } from "./config.js?v=5";
+import { analyserPage, nettoyerLibelle } from "./detect.js?v=5";
+import { construirePdf } from "./export.js?v=5";
 
 const $ = (id) => document.getElementById(id);
 const VENDOR = new URL("../../vendor/pdfjs/", import.meta.url).href;
