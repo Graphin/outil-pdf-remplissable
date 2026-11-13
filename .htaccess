@@ -1,8 +1,26 @@
-# Types de fichiers pour l'outil PDF remplissable (Apache et LiteSpeed).
-# Ces lignes ne font que préciser le type des fichiers ; elles ne changent rien d'autre.
+# Outil PDF remplissable : réglages du serveur (Apache et LiteSpeed).
+# Types de fichiers, non-référencement et en-têtes de sécurité. Rien d'autre.
+
 <IfModule mod_mime.c>
   AddType application/javascript .js .mjs
   AddType application/wasm .wasm
   AddType application/json .json
   AddType application/octet-stream .bcmap .pfb
+  AddType font/woff2 .woff2
+</IfModule>
+
+Options -Indexes
+
+<IfModule mod_headers.c>
+  # Ni indexé, ni suivi, ni mis en cache par les moteurs de recherche.
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+  # Sécurité : la page ne charge que ses propres fichiers, ne s'affiche pas dans un autre site
+  # et ne transmet pas son adresse aux sites tiers.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: blob:; connect-src 'self' blob: data:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "no-referrer"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Strict-Transport-Security "max-age=31536000"
 </IfModule>

@@ -786,6 +786,20 @@ export async function analyserPage(page, lib, options = {}) {
     champs.splice(i, 1);
   }
 
+  // Petite zone de saisie posée à cheval sur une ligne de texte imprimé : c'est un blanc entre
+  // les lettres ou les mots (rendu du texte plus fin selon le système, sur Mac par exemple),
+  // pas une case à remplir. Une vraie zone ne recouvre pas le texte de la page.
+  for (let i = champs.length - 1; i >= 0; i--) {
+    const f = champs[i];
+    if (f.type !== "text" || f.w > 80) continue;
+    const surLeTexte = segTexte.some((s) => {
+      const recX = Math.min(f.x + f.w, s.x1) - Math.max(f.x, s.x0);
+      const recY = Math.min(f.y + f.h, s.y1) - Math.max(f.y, s.y0);
+      return recX >= f.w * 0.5 && recY >= Math.min(f.h, s.y1 - s.y0) * 0.25;
+    });
+    if (surLeTexte) champs.splice(i, 1);
+  }
+
   // Dédoublonnage final par priorité.
   champs.sort((a, b) => b.priorite - a.priorite);
   const finaux = [];
